@@ -1,0 +1,5 @@
+output: domain/mocks
+outpkg: mocks
+dir: .
+recursive: true
+all: true

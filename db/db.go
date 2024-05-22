@@ -1,18 +1,24 @@
 package db
 
 import (
-	"database/sql"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/greekrode/loan-engine-amartha/domain"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
+var TrxManager TransactionManager
 
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite3", "data.db")
+	DB, err = gorm.Open(sqlite.Open("data.db"), &gorm.Config{})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to connect database: %v", err)
 	}
+
+	DB.AutoMigrate(&domain.Borrower{}, &domain.Loan{}, &domain.PaymentSchedule{}, &domain.Payment{})
+
+	TrxManager = NewGormTransactionManager(DB)
 }
